@@ -21,6 +21,8 @@ from .workers import ProcessWorker
 
 logger_amp = get_logger("amplifier")
 logger_marker = get_logger("marker")
+from communicate import Communication
+import queue
 
 
 class RingBuffer(deque):
@@ -84,7 +86,7 @@ class Marker(RingBuffer):
     """
 
     def __init__(
-        self, interval: list, srate: float, events: Optional[List[int]] = None
+            self, interval: list, srate: float, events: Optional[List[int]] = None
     ):
         self.events = events
         if events is not None:
@@ -277,10 +279,10 @@ class NeuroScan(BaseAmplifier):
     }
 
     def __init__(
-        self,
-        device_address: Tuple[str, int] = ("127.0.0.1", 4000),
-        srate: float = 1000,
-        num_chans: int = 68,
+            self,
+            device_address: Tuple[str, int] = ("127.0.0.1", 4000),
+            srate: float = 1000,
+            num_chans: int = 68,
     ):
         super().__init__()
         self.device_address = device_address
@@ -749,7 +751,7 @@ class Neuracle(BaseAmplifier):
         self.num_chans = num_chans
         self.tcp_link = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._update_time = 0.04
-        self.pkg_size = int(self._update_time*4*self.num_chans*self.srate)
+        self.pkg_size = int(self._update_time * 4 * self.num_chans * self.srate)
 
     def set_timeout(self, timeout):
         if self.tcp_link:
@@ -766,15 +768,15 @@ class Neuracle(BaseAmplifier):
             print("Can not receive data from socket")
         else:
             data, evt = self._unpack_data(raw_data)
-            data = data.reshape(len(data)//self.num_chans, self.num_chans)
+            data = data.reshape(len(data) // self.num_chans, self.num_chans)
         return data.tolist()
 
     def _unpack_data(self, raw):
         len_raw = len(raw)
         event, hex_data = [], []
         # unpack hex_data in row
-        hex_data = raw[:len_raw - np.mod(len_raw, 4*self.num_chans)]
-        n_item = int(len(hex_data)/4/self.num_chans)
+        hex_data = raw[:len_raw - np.mod(len_raw, 4 * self.num_chans)]
+        n_item = int(len(hex_data) / 4 / self.num_chans)
         format_str = '<' + (str(self.num_chans) + 'f') * n_item
         unpack_data = struct.unpack(format_str, hex_data)
 
@@ -1016,11 +1018,11 @@ class HTOnlineSystem(BaseAmplifier):
     }
 
     def __init__(
-        self,
-        device_address: Tuple[str, int] = ("127.0.0.1", 4000),
-        srate: float = 1000,
-        packet_samples: float = 100,
-        num_chans: int = 32
+            self,
+            device_address: Tuple[str, int] = ("127.0.0.1", 4000),
+            srate: float = 1000,
+            packet_samples: float = 100,
+            num_chans: int = 32
     ):
         super().__init__()
         self.device_address = device_address
@@ -1411,3 +1413,17 @@ class HTOnlineSystem(BaseAmplifier):
         """
         self.send(self._COMMANDS["stop_acq"])
         self.stop()
+
+
+class VirtualAmplifier(BaseAmplifier):
+    def __init__(self, data_len, channel_num, srate):
+        super(VirtualAmplifier, self).__init__()
+        self.communicate = Communication(channel_num, srate)
+        self.data_len = data_len
+        self.srate = srate
+
+    def recv(self):
+        return self.communicate.get(self.data_len)
+
+    def get_samples(self):
+        return self.srate
