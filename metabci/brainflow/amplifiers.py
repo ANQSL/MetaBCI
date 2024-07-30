@@ -21,7 +21,7 @@ from .workers import ProcessWorker
 
 logger_amp = get_logger("amplifier")
 logger_marker = get_logger("marker")
-from communicate import Communication
+from .communicate import Communication
 import queue
 
 
@@ -1427,3 +1427,9 @@ class VirtualAmplifier(BaseAmplifier):
 
     def get_samples(self):
         return self.srate
+
+    def get_data_len(self):
+        return self.communicate.get_len()
+
+    def back_result(self,result):
+        self.communicate.back_result(result)

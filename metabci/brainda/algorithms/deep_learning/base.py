@@ -224,12 +224,12 @@ class SkorchNet:
             model.double(),
             criterion=nn.CrossEntropyLoss,
             optimizer=optim.Adam,
-            optimizer__weight_decay=0,
+            optimizer__weight_decay=0.002,
             batch_size=128,
             lr=1e-2,
             max_epochs=300,
-            device="cpu",
-            train_split=ValidSplit(0.2, stratified=True),
+            device="cuda",
+            train_split=ValidSplit(0.2, stratified=True,random_state=22),
             iterator_train__shuffle=True,
             callbacks=[
                 (

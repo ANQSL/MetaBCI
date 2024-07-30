@@ -37,6 +37,9 @@ class Communication(threading.Thread):
         self.recv_data = np.delete(self.recv_data, [0, 1, 2, 3, 4], axis=0)
         return data
 
+    def get_len(self):
+        return self.recv_data.shape[1]
+
     def data_recv(self):
         if self.data_client:
             lock.acquire()
@@ -67,8 +70,10 @@ class Communication(threading.Thread):
             except Exception as e:
                 print("没有连接")
 
-    def back_result(self,):
-        pass
+    def back_result(self, result):
+        result = json.dumps(result).encode(encoding="utf8")
+        self.data_client.send(result)
+        print("计算结果：{}".format(result))
 
     def command_recv(self):
         if self.command_client:
@@ -91,6 +96,7 @@ class Communication(threading.Thread):
                 print("采集连接")
             except Exception as e:
                 print("没有连接")
+
     def run(self):
         while (1):
             self.data_recv()
