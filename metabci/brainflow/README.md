@@ -25,3 +25,11 @@ Now, *brainflow* is able to support more kinds of devices by:
     synamp II will append a extra event channel to the raw data channel.
     Because we do not have chance to test each device that LSL supported, so
     please modify this class before using with your own condition.
+
+# Logger
+
+Added functionality to logger
+
+- Now it is possible to control whether logs are printed on the console and the maximum size of a single log through parameters
+- According to the level of the log, the format of printing the log will also vary, making the log more practical
+- Added a function to restart the log
