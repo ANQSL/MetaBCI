@@ -1,0 +1,6 @@
+data/*/
+data/*.jsonl
+data/*.docx
+data2/*/
+*.pt
+*.pyc

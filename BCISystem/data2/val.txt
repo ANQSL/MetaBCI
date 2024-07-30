@@ -1,0 +1,4 @@
+D:/project/BrainAuthentication/Calculate/identity_recognition/data2/ltr/ltr
+D:/project/BrainAuthentication/Calculate/identity_recognition/data2/wsm/wsm4
+D:/project/BrainAuthentication/Calculate/identity_recognition/data2/yl/yl3
+D:/project/BrainAuthentication/Calculate/identity_recognition/data2/zqy/zqy5
